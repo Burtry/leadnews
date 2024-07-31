@@ -1,0 +1,24 @@
+#全局端口定义server:
+# 全局字符集设置
+spring:
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  aop:
+    proxy-target-class: true
+server:
+  tomcat:
+    uri-encoding: utf-8
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+
