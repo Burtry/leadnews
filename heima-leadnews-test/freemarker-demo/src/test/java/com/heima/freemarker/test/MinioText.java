@@ -1,14 +1,38 @@
 package com.heima.freemarker.test;
 
+import com.heima.file.service.FileStorageService;
+import com.heima.freemarker.FreeMarkerDemoApplication;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.errors.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
+@SpringBootTest(classes = FreeMarkerDemoApplication.class)
+@RunWith(SpringRunner.class)
 public class MinioText {
 
-    public static void main(String[] args) {
+    @Autowired
+    private FileStorageService fileStorageService;
+
+
+    @Test
+    public void text() throws FileNotFoundException {
+
+        FileInputStream fileInputStream = new FileInputStream("D:\\list.html");
+        String s = fileStorageService.uploadHtmlFile("", "list.html", fileInputStream);
+        System.out.println(s);
+
+    }
+
+
+    /*public static void main(String[] args) {
 
         try {
             FileInputStream fileInputStream = new FileInputStream("D:\\list.html");
@@ -26,5 +50,5 @@ public class MinioText {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }
