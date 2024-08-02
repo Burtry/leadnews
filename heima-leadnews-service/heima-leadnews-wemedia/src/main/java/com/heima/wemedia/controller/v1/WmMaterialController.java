@@ -2,6 +2,7 @@ package com.heima.wemedia.controller.v1;
 
 
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.dto.wemedia.WmMaterialDto;
 import com.heima.wemedia.service.WmMaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,10 @@ public class WmMaterialController {
     public ResponseResult uploadPicture(MultipartFile multipartFile) {
 
         return wmMaterialService.uploadPicture(multipartFile);
+    }
 
-
+    @PostMapping("list")
+    public ResponseResult list(WmMaterialDto wmMaterialDto) {
+        return wmMaterialService.getList(wmMaterialDto);
     }
 }

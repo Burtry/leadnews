@@ -1,9 +1,14 @@
 package com.heima.wemedia.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.file.service.FileStorageService;
+import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
+import com.heima.model.dto.wemedia.WmMaterialDto;
 import com.heima.model.pojo.wemedia.WmMaterial;
 
 import com.heima.utils.thread.WmThreadLocalUtil;
@@ -65,5 +70,38 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
 
         return ResponseResult.okResult(wmMaterial);
 
+    }
+
+    /**
+     * 素材列表查询
+     * @param wmMaterialDto
+     * @return
+     */
+    @Override
+    public ResponseResult getList(WmMaterialDto wmMaterialDto) {
+
+        //参数检查
+        wmMaterialDto.checkParam();
+        //分页查询
+        IPage page = new Page(wmMaterialDto.getPage(), wmMaterialDto.getSize());
+
+        LambdaQueryWrapper<WmMaterial> wmMaterialLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        //是否收藏
+        if (wmMaterialDto.getIsCollection() != null && wmMaterialDto.getIsCollection() == 1) {
+            wmMaterialLambdaQueryWrapper.eq(WmMaterial::getIsCollection,wmMaterialDto.getIsCollection());
+        }
+
+        //按照用户查询
+        wmMaterialLambdaQueryWrapper.eq(WmMaterial::getUserId,WmThreadLocalUtil.getUser().getId());
+
+        //按照时间倒序
+        wmMaterialLambdaQueryWrapper.orderByDesc(WmMaterial::getCreatedTime);
+        page = page(page,wmMaterialLambdaQueryWrapper);
+
+        //结果返回
+        ResponseResult responseResult = new PageResponseResult(wmMaterialDto.getPage(), wmMaterialDto.getSize(), (int) page.getTotal());
+        responseResult.setData(page.getRecords());
+        return responseResult;
     }
 }
