@@ -27,4 +27,6 @@ public class WmMaterialController {
     public ResponseResult list(WmMaterialDto wmMaterialDto) {
         return wmMaterialService.getList(wmMaterialDto);
     }
+
+
 }
