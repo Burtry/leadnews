@@ -1,5 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.heima.common.exception.ExceptionCatch
+  com.heima.common.exception.ExceptionCatch,\
+  com.heima.common.aliyun.GreenImageScan,\
+  com.heima.common.aliyun.GreenTextScan
 
 
 
