@@ -1,18 +1,27 @@
 package com.heima.wemedia.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.hankcs.hanlp.corpus.io.ByteArrayFileStream;
+import com.hankcs.hanlp.corpus.io.ByteArrayStream;
 import com.heima.apis.article.IArticleClient;
+import com.heima.common.tess4j.Tess4jClient;
+import com.heima.file.service.FileStorageService;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.dto.article.ArticleDto;
 import com.heima.model.dto.wemedia.WmNewsDto;
 import com.heima.model.pojo.wemedia.WmChannel;
 import com.heima.model.pojo.wemedia.WmNews;
+import com.heima.model.pojo.wemedia.WmSensitive;
 import com.heima.model.pojo.wemedia.WmUser;
+import com.heima.utils.common.SensitiveWordUtil;
 import com.heima.wemedia.mapper.WmChannelMapper;
 import com.heima.wemedia.mapper.WmNewsMapper;
+import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.mapper.WmUserMapper;
 import com.heima.wemedia.service.WmNewsAutoScanService;
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.tess4j.TesseractException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +29,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +53,15 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
     @Autowired
     private WmUserMapper wmUserMapper;
 
+    @Autowired
+    private WmSensitiveMapper wmSensitiveMapper;
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
+    private Tess4jClient tess4jClient;
+
     @Override
     @Async //表明当前方法为异步方法
     public void autoScanWmNews(Integer id) {
@@ -53,6 +75,10 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             //从内容中提取纯文本和图片
             Map<String,Object> textAndImages = handleTextAndImages(wmNews);
 
+            //自管理敏感词过滤 审核通过为true
+            boolean isSensitive = handleSensitiveScan((String)textAndImages.get("content"),wmNews);
+            if(!isSensitive) return;
+
             //审核文本
             boolean isTextScan = handleTextScan((String)textAndImages.get("content"),wmNews);
             if(!isTextScan) return;
@@ -60,6 +86,9 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
             boolean isImagesScan = handleImagesScan((List<String>) textAndImages.get("images"),wmNews);
             if(!isImagesScan) return;
+
+
+
             //审核成功，保存app端的相关文章数据
             ResponseResult responseResult = saveArticle(wmNews);
             if (!responseResult.getCode().equals(200)) {
@@ -73,6 +102,27 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
         }
 
+
+    }
+
+    private boolean handleSensitiveScan(String content, WmNews wmNews) {
+
+        boolean flag = true;
+
+        List<WmSensitive> wmSensitives = wmSensitiveMapper.selectList(Wrappers.<WmSensitive>lambdaQuery().select(WmSensitive::getSensitives));
+        List<String> stringList = wmSensitives.stream().map(WmSensitive::getSensitives).collect(Collectors.toList());
+
+        //初始化敏感词库
+        SensitiveWordUtil.initMap(stringList);
+
+        //查询文章是否包含敏感词
+        Map<String, Integer> map = SensitiveWordUtil.matchWords(content);
+        if (!map.isEmpty()) {
+            updateWmNews(wmNews,(short) 2,"文章包含敏感词" + map);
+            flag = false;
+        }
+
+        return flag;
 
     }
 
@@ -114,6 +164,30 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
         boolean flag = true;
         //图片去重
         images = images.stream().distinct().collect(Collectors.toList());
+
+        //从minio中下载图片
+        List<byte[]> imageList = new ArrayList<>();
+
+
+
+            try {
+                for (String image : images) {
+                    byte[] bytes = fileStorageService.downLoadFile(image);
+
+                    ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+                    BufferedImage bufferedImage = ImageIO.read(in);
+                    //图片识别
+                    String result = tess4jClient.doOCR(bufferedImage);
+
+                    //过滤敏感词
+                    boolean isSensitive = handleSensitiveScan(result, wmNews);
+                    if(!isSensitive) return false;
+                    imageList.add(bytes);
+
+                }
+            } catch (IOException | TesseractException e) {
+                throw new RuntimeException(e);
+            }
 
         if (wmNews.getImages().isEmpty()) {
             return flag;
