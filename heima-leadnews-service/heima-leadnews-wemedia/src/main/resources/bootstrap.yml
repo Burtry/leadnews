@@ -14,3 +14,4 @@ spring:
 tess4j:
   data-path: D:\DEV\code\Javaweb\leadnews\heima-leadnews-test\tess4j\src\main\resources
   language: chi_sim
+

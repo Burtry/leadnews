@@ -20,6 +20,7 @@ import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.mapper.WmUserMapper;
 import com.heima.wemedia.service.WmNewsAutoScanService;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.TesseractException;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
     @Override
     @Async //表明当前方法为异步方法
+    @GlobalTransactional
     public void autoScanWmNews(Integer id) {
 
         WmNews wmNews = wmNewsMapper.selectById(id);
@@ -84,8 +86,8 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             if(!isTextScan) return;
             //审核图片
 
-            boolean isImagesScan = handleImagesScan((List<String>) textAndImages.get("images"),wmNews);
-            if(!isImagesScan) return;
+            //boolean isImagesScan = handleImagesScan((List<String>) textAndImages.get("images"),wmNews);
+            //if(!isImagesScan) return;
 
 
 
