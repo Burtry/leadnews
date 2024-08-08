@@ -39,7 +39,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void pool() {
-        Task task = taskService.poll(100, 50);
+        Task task = taskService.pull(100, 50);
         System.out.println(task);
 
     }
