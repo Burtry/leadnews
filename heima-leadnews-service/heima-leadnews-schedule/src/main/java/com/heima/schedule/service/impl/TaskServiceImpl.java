@@ -46,6 +46,50 @@ public class TaskServiceImpl implements TaskService {
         return task.getTaskId();
     }
 
+    @Override
+    public boolean cancelTask(long taskId) {
+
+        boolean flag = false;
+        //删除任务，更新任务日志
+        Task task = updateBb(taskId);
+
+        //删除redis中的数据
+        if (task != null) {
+            removeTaskFromCache(task);
+            flag = true;
+        }
+
+        return flag;
+    }
+
+    private void removeTaskFromCache(Task task) {
+        String key = task.getTaskType() + "_" + task.getPriority();
+        if (task.getExecuteTime() <= System.currentTimeMillis()) {
+            cacheService.lRemove(ScheduleConstants.TOPIC + key, 0, JSON.toJSONString(task));
+        } else {
+            cacheService.zRemove(ScheduleConstants.FUTURE + key,JSON.toJSONString(task));
+        }
+    }
+
+    private Task updateBb(long taskId) {
+        Task task = null;
+        try {
+            //删除任务
+            taskinfoMapper.deleteById(taskId);
+            TaskinfoLogs taskinfoLogs = taskinfoLogsMapper.selectById(taskId);
+            taskinfoLogs.setStatus(ScheduleConstants.CANCELLED);
+            taskinfoLogsMapper.updateById(taskinfoLogs);
+
+            task = new Task();
+            BeanUtils.copyProperties(taskinfoLogs,task);
+            task.setExecuteTime(taskinfoLogs.getExecuteTime().getTime());
+        }catch (Exception e){
+            log.error("task cancel exception taskId={}",taskId);
+        }
+
+        return task;
+    }
+
     private void addTaskToCache(Task task) {
 
         String key = task.getTaskType() + "_" + task.getPriority();
