@@ -1,6 +1,7 @@
 package com.heima.schedule.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.heima.common.constants.ScheduleConstants;
 import com.heima.common.redis.CacheService;
 import com.heima.model.dto.schedule.Task;
@@ -51,7 +52,7 @@ public class TaskServiceImpl implements TaskService {
 
         boolean flag = false;
         //删除任务，更新任务日志
-        Task task = updateBb(taskId);
+        Task task = updateBb(taskId,ScheduleConstants.CANCELLED);
 
         //删除redis中的数据
         if (task != null) {
@@ -60,6 +61,24 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return flag;
+    }
+
+    @Override
+    public Task poll(int type, int priority) {
+        Task task = null;
+        try {
+            String key = type + "_" + priority;
+            String taskJson = cacheService.lRightPop(ScheduleConstants.TOPIC + key);
+            if (StringUtils.isNotBlank(taskJson)) {
+                task = JSON.parseObject(taskJson, Task.class);
+
+                updateBb(task.getTaskId(),ScheduleConstants.EXECUTED);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return task;
     }
 
     private void removeTaskFromCache(Task task) {
@@ -71,13 +90,13 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private Task updateBb(long taskId) {
+    private Task updateBb(long taskId,int status) {
         Task task = null;
         try {
             //删除任务
             taskinfoMapper.deleteById(taskId);
             TaskinfoLogs taskinfoLogs = taskinfoLogsMapper.selectById(taskId);
-            taskinfoLogs.setStatus(ScheduleConstants.CANCELLED);
+            taskinfoLogs.setStatus(status);
             taskinfoLogsMapper.updateById(taskinfoLogs);
 
             task = new Task();

@@ -26,10 +26,17 @@ public class TaskServiceImplTest {
         task.setTaskType(100);
         task.setParameters("task test".getBytes());
         task.setPriority(50);
-        task.setExecuteTime(new Date().getTime() + 500000);
+        task.setExecuteTime(new Date().getTime());
 
         long taskId = taskService.addTask(task);
         System.out.println(taskId);
+
+    }
+
+    @Test
+    public void pool() {
+        Task task = taskService.poll(100, 50);
+        System.out.println(task);
 
     }
 }
