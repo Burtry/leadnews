@@ -69,7 +69,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task poll(int type, int priority) {
+    public Task pull(int type, int priority) {
         Task task = null;
         try {
             String key = type + "_" + priority;
