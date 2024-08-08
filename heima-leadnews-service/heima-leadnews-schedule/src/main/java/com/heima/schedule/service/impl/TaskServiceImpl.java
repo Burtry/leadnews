@@ -2,6 +2,7 @@ package com.heima.schedule.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.heima.common.constants.ScheduleConstants;
 import com.heima.common.redis.CacheService;
 import com.heima.model.dto.schedule.Task;
@@ -17,8 +18,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 
@@ -165,22 +168,53 @@ public class TaskServiceImpl implements TaskService {
      */
     @Scheduled(cron = "0 */1 * * * ?")
     public void refresh() {
-        log.info("定时任务开始");
-        Set<String> futureKeys = cacheService.scan(ScheduleConstants.FUTURE + "*");
 
-        for (String futureKey : futureKeys) {
+        String token = cacheService.tryLock("FUTURE_TASK_SYNC", 1000 * 30);
 
-            String topicKey = ScheduleConstants.TOPIC + futureKey.split(ScheduleConstants.FUTURE)[1];
-            //按照key和分值查询符合条件的数据
-            Set<String> tasks = cacheService.zRangeByScore(futureKey, 0, System.currentTimeMillis());
+        if (StringUtils.isNotBlank(token)) {
+            log.info("定时任务开始");
+            Set<String> futureKeys = cacheService.scan(ScheduleConstants.FUTURE + "*");
 
-            //同步数据
-            if (!tasks.isEmpty()) {
-                cacheService.refreshWithPipeline(futureKey,topicKey,tasks);
-                log.info("已将" + futureKey + "刷新至" + topicKey);
+            for (String futureKey : futureKeys) {
+
+                String topicKey = ScheduleConstants.TOPIC + futureKey.split(ScheduleConstants.FUTURE)[1];
+                //按照key和分值查询符合条件的数据
+                Set<String> tasks = cacheService.zRangeByScore(futureKey, 0, System.currentTimeMillis());
+
+                //同步数据
+                if (!tasks.isEmpty()) {
+                    cacheService.refreshWithPipeline(futureKey,topicKey,tasks);
+                    log.info("已将" + futureKey + "刷新至" + topicKey);
+                }
             }
         }
+    }
 
+    @Scheduled(cron = "0 */5 * * * ?")
+    @PostConstruct
+    public void reloadData() {
+        clearCache();
+        log.info("数据库数据同步到缓存");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, 5);
 
+        //查看小于未来5分钟的所有任务
+        List<Taskinfo> allTasks = taskinfoMapper.selectList(Wrappers.<Taskinfo>lambdaQuery().lt(Taskinfo::getExecuteTime,calendar.getTime()));
+        if(allTasks != null && allTasks.size() > 0){
+            for (Taskinfo taskinfo : allTasks) {
+                Task task = new Task();
+                BeanUtils.copyProperties(taskinfo,task);
+                task.setExecuteTime(taskinfo.getExecuteTime().getTime());
+                addTaskToCache(task);
+            }
+        }
+    }
+
+    private void clearCache(){
+        // 删除缓存中未来数据集合和当前消费者队列的所有key
+        Set<String> futurekeys = cacheService.scan(ScheduleConstants.FUTURE + "*");// future_
+        Set<String> topickeys = cacheService.scan(ScheduleConstants.TOPIC + "*");// topic_
+        cacheService.delete(futurekeys);
+        cacheService.delete(topickeys);
     }
 }
