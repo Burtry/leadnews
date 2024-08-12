@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@Transactional
+//@Transactional
 public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
     @Autowired
