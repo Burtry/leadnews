@@ -6,6 +6,7 @@ import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.dto.wemedia.WmNewsDto;
 import com.heima.model.dto.wemedia.WmNewsPageReqDto;
 import com.heima.model.pojo.wemedia.WmNews;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface WmNewsService extends IService<WmNews> {
 
@@ -17,4 +18,6 @@ public interface WmNewsService extends IService<WmNews> {
     ResponseResult findAll(WmNewsPageReqDto dto);
 
     ResponseResult suubmit(WmNewsDto dto);
+
+    ResponseResult downOrUp(@RequestBody WmNewsDto dto);
 }
