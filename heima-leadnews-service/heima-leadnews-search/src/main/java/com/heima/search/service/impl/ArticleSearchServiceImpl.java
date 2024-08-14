@@ -1,6 +1,9 @@
 package com.heima.search.service.impl;
 
 
+import com.heima.model.pojo.user.ApUser;
+import com.heima.search.service.ApUserSearchService;
+import com.heima.utils.thread.AppThreadLocalUtil;
 import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.heima.model.common.dtos.ResponseResult;
@@ -20,6 +23,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -34,12 +38,24 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+
+    @Autowired
+    private ApUserSearchService apUserSearchService;
     @Override
     public ResponseResult search(UserSearchDto userSearchDto) throws IOException {
         //1.检查参数
         if (userSearchDto == null || StringUtils.isBlank(userSearchDto.getSearchWords())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
+
+        ApUser user = AppThreadLocalUtil.getUser();
+
+        if (user != null && userSearchDto.getFromIndex() == 0) {
+            //异步调用保存搜索记录
+            apUserSearchService.insert(userSearchDto.getSearchWords(), user.getId() );
+        }
+
+
 
         //设置查询条件
         SearchRequest searchRequest = new SearchRequest("app_info_article");
