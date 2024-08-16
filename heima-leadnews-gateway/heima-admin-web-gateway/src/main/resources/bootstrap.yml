@@ -1,0 +1,12 @@
+server:
+  port: 6001
+spring:
+  application:
+    name: admin-web-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.50.128:8848
+      config:
+        server-addr: 192.168.50.128:8848
+        file-extension: yml
