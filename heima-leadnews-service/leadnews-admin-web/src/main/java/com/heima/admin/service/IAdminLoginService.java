@@ -1,11 +1,11 @@
 package com.heima.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.heima.admin.dto.AdminLoginDTO;
-import com.heima.admin.pojo.AdUser;
+import com.heima.model.common.dtos.AdminLoginDTO;
+import com.heima.model.pojo.admin.AdUser;
 import com.heima.model.common.dtos.ResponseResult;
 
-public interface AdminLoginService extends IService<AdUser> {
+public interface IAdminLoginService extends IService<AdUser> {
 
 
     /**

@@ -2,10 +2,10 @@ package com.heima.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.heima.admin.dto.AdminLoginDTO;
+import com.heima.model.common.dtos.AdminLoginDTO;
 import com.heima.admin.mapper.AdUserMapper;
-import com.heima.admin.pojo.AdUser;
-import com.heima.admin.service.AdminLoginService;
+import com.heima.model.pojo.admin.AdUser;
+import com.heima.admin.service.IAdminLoginService;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.utils.common.AppJwtUtil;
@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @Transactional
-public class AdminLoginServiceImpl extends ServiceImpl<AdUserMapper, AdUser> implements AdminLoginService {
+public class AdminLoginServiceImpl extends ServiceImpl<AdUserMapper, AdUser> implements IAdminLoginService {
 
 
 
@@ -44,7 +44,7 @@ public class AdminLoginServiceImpl extends ServiceImpl<AdUserMapper, AdUser> imp
 
         adUser.setPassword("");
         adUser.setSalt("");
-        map.put("adUser",adUser);
+        map.put("user",adUser);
         map.put("token",token);
 
         return ResponseResult.okResult(map);

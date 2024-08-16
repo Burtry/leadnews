@@ -1,4 +1,4 @@
-package com.heima.admin.dto;
+package com.heima.model.common.dtos;
 
 import lombok.Data;
 
