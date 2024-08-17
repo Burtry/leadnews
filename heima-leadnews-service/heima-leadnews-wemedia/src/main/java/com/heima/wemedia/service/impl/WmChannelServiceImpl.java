@@ -79,6 +79,11 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
         if (id == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
+        WmChannel channel = getById(id);
+        if (channel.getStatus()) {
+            //启用状态不能进行删除
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID,"只有禁用的频道可以删除");
+        }
         removeById(id);
         return ResponseResult.okResult(200,"删除成功!!!!!!");
     }
