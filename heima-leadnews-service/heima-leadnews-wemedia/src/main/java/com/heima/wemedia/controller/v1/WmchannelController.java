@@ -34,4 +34,10 @@ public class WmchannelController {
         return wmChannelService.saveChannel(adChannelDTO);
     }
 
+
+    @GetMapping("/del/{id}")
+    public ResponseResult delete(@PathVariable Integer id) {
+        return wmChannelService.delete(id);
+    }
+
 }

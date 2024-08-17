@@ -68,4 +68,10 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
         save(wmChannel);
         return ResponseResult.okResult(200,"添加成功");
     }
+
+    @Override
+    public ResponseResult delete(Integer id) {
+        removeById(id);
+        return ResponseResult.okResult(200,"删除成功!!!!!!");
+    }
 }
