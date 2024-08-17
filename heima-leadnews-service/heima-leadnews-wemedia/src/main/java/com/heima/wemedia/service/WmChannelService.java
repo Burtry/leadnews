@@ -1,8 +1,7 @@
 package com.heima.wemedia.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.heima.model.common.dtos.AdminChannelPageRequestDTO;
-import com.heima.model.common.dtos.AdminLoginDTO;
+import com.heima.model.common.dtos.PageRequestAndNameDTO;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.dto.wemedia.AdChannelDTO;
 import com.heima.model.pojo.wemedia.WmChannel;
@@ -18,10 +17,10 @@ public interface WmChannelService extends IService<WmChannel> {
 
     /**
      * 管理端获取频道列表
-     * @param adminChannelPageRequestDTO
+     * @param pageRequestAndNameDTO
      * @return
      */
-    ResponseResult getList(AdminChannelPageRequestDTO adminChannelPageRequestDTO);
+    ResponseResult getList(PageRequestAndNameDTO pageRequestAndNameDTO);
 
     /**
      * 添加频道

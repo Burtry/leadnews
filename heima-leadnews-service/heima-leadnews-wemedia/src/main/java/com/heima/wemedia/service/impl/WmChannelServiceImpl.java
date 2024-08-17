@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.heima.model.common.dtos.AdminChannelPageRequestDTO;
-import com.heima.model.common.dtos.AdminLoginDTO;
+import com.heima.model.common.dtos.PageRequestAndNameDTO;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
@@ -38,24 +37,24 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
     }
 
     @Override
-    public ResponseResult getList(AdminChannelPageRequestDTO adminChannelPageRequestDTO) {
+    public ResponseResult getList(PageRequestAndNameDTO pageRequestAndNameDTO) {
 
         //检查参数
-        adminChannelPageRequestDTO.checkParam();
+        pageRequestAndNameDTO.checkParam();
 
         //分页查询
-        IPage page = new Page(adminChannelPageRequestDTO.getPage(), adminChannelPageRequestDTO.getSize());
+        IPage page = new Page(pageRequestAndNameDTO.getPage(), pageRequestAndNameDTO.getSize());
 
         //构建条件
         QueryWrapper<WmChannel> wmChannelQueryWrapper = new QueryWrapper<>();
 
         //根据如果存在name，模糊查询
-        if (StringUtils.isNotBlank(adminChannelPageRequestDTO.getName())) {
-            wmChannelQueryWrapper.like("name",adminChannelPageRequestDTO.getName());
+        if (StringUtils.isNotBlank(pageRequestAndNameDTO.getName())) {
+            wmChannelQueryWrapper.like("name", pageRequestAndNameDTO.getName());
         }
         page(page,wmChannelQueryWrapper);
 
-        ResponseResult responseResult = new PageResponseResult(adminChannelPageRequestDTO.getPage(),adminChannelPageRequestDTO.getSize(),(int)page.getTotal());
+        ResponseResult responseResult = new PageResponseResult(pageRequestAndNameDTO.getPage(), pageRequestAndNameDTO.getSize(),(int)page.getTotal());
 
         responseResult.setData(page.getRecords());
         return responseResult;
