@@ -40,4 +40,11 @@ public class WmchannelController {
         return wmChannelService.delete(id);
     }
 
+
+    @PostMapping("/update")
+    public ResponseResult update(@RequestBody AdChannelDTO adChannelDTO) {
+
+        return wmChannelService.updateChannel(adChannelDTO);
+    }
+
 }

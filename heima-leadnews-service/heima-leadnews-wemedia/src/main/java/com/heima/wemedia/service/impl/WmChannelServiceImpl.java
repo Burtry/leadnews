@@ -2,12 +2,14 @@ package com.heima.wemedia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.model.common.dtos.AdminChannelPageRequestDTO;
 import com.heima.model.common.dtos.AdminLoginDTO;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.dto.wemedia.AdChannelDTO;
 import com.heima.model.pojo.wemedia.WmChannel;
 import com.heima.wemedia.mapper.WmChannelMapper;
@@ -62,6 +64,9 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
 
     @Override
     public ResponseResult saveChannel(AdChannelDTO adChannelDTO) {
+        if (adChannelDTO == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
         WmChannel wmChannel = new WmChannel();
         BeanUtils.copyProperties(adChannelDTO,wmChannel);
         wmChannel.setCreatedTime(new Date());
@@ -71,7 +76,26 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
 
     @Override
     public ResponseResult delete(Integer id) {
+        if (id == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
         removeById(id);
         return ResponseResult.okResult(200,"删除成功!!!!!!");
+    }
+
+    @Override
+    public ResponseResult updateChannel(AdChannelDTO adChannelDTO) {
+        if (adChannelDTO == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        WmChannel wmChannel = new WmChannel();
+        BeanUtils.copyProperties(adChannelDTO,wmChannel);
+        if (wmChannel.getId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        update(wmChannel, Wrappers.<WmChannel>lambdaUpdate().eq(WmChannel::getId, adChannelDTO.getId()));
+
+        return ResponseResult.okResult(200,"更新成功!");
     }
 }
