@@ -4,7 +4,7 @@ import com.heima.model.common.dtos.PageRequestDto;
 import lombok.Data;
 
 @Data
-public class NewsAutoPageReqDTO extends PageRequestDto {
+public class NewsAuthPageReqDTO extends PageRequestDto {
 
     private Integer id;
 

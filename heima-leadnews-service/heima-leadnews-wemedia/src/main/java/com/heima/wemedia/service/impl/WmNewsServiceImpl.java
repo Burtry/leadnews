@@ -13,7 +13,7 @@ import com.heima.common.exception.CustomException;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
-import com.heima.model.dto.wemedia.NewsAutoPageReqDTO;
+import com.heima.model.dto.wemedia.NewsAuthPageReqDTO;
 import com.heima.model.dto.wemedia.WmNewsDto;
 import com.heima.model.dto.wemedia.WmNewsPageReqDto;
 import com.heima.model.pojo.wemedia.WmMaterial;
@@ -64,6 +64,9 @@ public class WmNewsServiceImpl  extends ServiceImpl<WmNewsMapper, WmNews> implem
 
     @Autowired
     private WmUserMapper wmUserMapper;
+
+    @Autowired
+    private WmNewsMapper wmNewsMapper;
 
     /**
      * 查询文章
@@ -319,24 +322,24 @@ public class WmNewsServiceImpl  extends ServiceImpl<WmNewsMapper, WmNews> implem
     }
 
     @Override
-    public ResponseResult getList(NewsAutoPageReqDTO newsAutoPageReqDTO) {
+    public ResponseResult getList(NewsAuthPageReqDTO newsAuthPageReqDTO) {
 
-        newsAutoPageReqDTO.checkParam();
+        newsAuthPageReqDTO.checkParam();
 
         //构建分页
-        IPage page = new Page(newsAutoPageReqDTO.getPage(), newsAutoPageReqDTO.getSize());
+        IPage page = new Page(newsAuthPageReqDTO.getPage(), newsAuthPageReqDTO.getSize());
 
         //构建分页条件
         QueryWrapper<WmNews> wmNewsQueryWrapper = new QueryWrapper<>();
 
         //按照标题模糊查询
-        if (newsAutoPageReqDTO.getTitle() != null) {
-            wmNewsQueryWrapper.like("title",newsAutoPageReqDTO.getTitle());
+        if (newsAuthPageReqDTO.getTitle() != null) {
+            wmNewsQueryWrapper.like("title", newsAuthPageReqDTO.getTitle());
         }
 
         //按照审核状态精准检索
-        if (newsAutoPageReqDTO.getStatus() != null) {
-            wmNewsQueryWrapper.eq("status",newsAutoPageReqDTO.getStatus());
+        if (newsAuthPageReqDTO.getStatus() != null) {
+            wmNewsQueryWrapper.eq("status", newsAuthPageReqDTO.getStatus());
         }
 
         //按照创建时间倒序查询
@@ -358,7 +361,7 @@ public class WmNewsServiceImpl  extends ServiceImpl<WmNewsMapper, WmNews> implem
             resultList.add(newsVO);
         }
         //封装结果
-        ResponseResult responseResult = new PageResponseResult(newsAutoPageReqDTO.getPage(),newsAutoPageReqDTO.getSize(),(int)page.getTotal());
+        ResponseResult responseResult = new PageResponseResult(newsAuthPageReqDTO.getPage(), newsAuthPageReqDTO.getSize(),(int)page.getTotal());
 
         responseResult.setData(resultList);
 
@@ -379,6 +382,41 @@ public class WmNewsServiceImpl  extends ServiceImpl<WmNewsMapper, WmNews> implem
 
         return ResponseResult.okResult(newsVO);
 
+    }
+
+    @Override
+    public ResponseResult authFail(NewsAuthPageReqDTO newsAuthDTO) {
+
+        if (newsAuthDTO == null || newsAuthDTO.getId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        WmNews wmNews = wmNewsMapper.selectById(newsAuthDTO.getId());
+        if (wmNews == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+
+        //设置为审核失败
+        wmNews.setStatus((short) 2);
+        wmNews.setReason(newsAuthDTO.getMsg());
+        updateById(wmNews);
+        return ResponseResult.okResult(200,"操作成功");
+
+    }
+
+    @Override
+    public ResponseResult authPass(NewsAuthPageReqDTO newsAuthPageReqDTO) {
+        if (newsAuthPageReqDTO == null || newsAuthPageReqDTO.getId() == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+        WmNews wmNews = wmNewsMapper.selectById(newsAuthPageReqDTO.getId());
+        if (wmNews == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+
+        //设置为人工审核成功
+        wmNews.setStatus((short) 4);
+        updateById(wmNews);
+        return ResponseResult.okResult(200,"操作成功");
     }
 }
 

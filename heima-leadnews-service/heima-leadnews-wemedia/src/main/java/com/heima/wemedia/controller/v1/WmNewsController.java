@@ -1,7 +1,7 @@
 package com.heima.wemedia.controller.v1;
 
 import com.heima.model.common.dtos.ResponseResult;
-import com.heima.model.dto.wemedia.NewsAutoPageReqDTO;
+import com.heima.model.dto.wemedia.NewsAuthPageReqDTO;
 import com.heima.model.dto.wemedia.WmNewsDto;
 import com.heima.model.dto.wemedia.WmNewsPageReqDto;
 import com.heima.wemedia.service.WmNewsService;
@@ -32,13 +32,23 @@ public class WmNewsController {
     }
 
     @PostMapping("/list_vo")
-    public ResponseResult getList(NewsAutoPageReqDTO newsAutoPageReqDTO) {
-        return wmNewsService.getList(newsAutoPageReqDTO);
+    public ResponseResult getList(@RequestBody NewsAuthPageReqDTO newsAuthPageReqDTO) {
+        return wmNewsService.getList(newsAuthPageReqDTO);
     }
 
     @GetMapping("/one_vo/{id}")
     public ResponseResult getOne(@PathVariable Integer id) {
         return wmNewsService.getNewsById(id);
+    }
+
+    @PostMapping("/auth_fail")
+    public ResponseResult authFail(@RequestBody NewsAuthPageReqDTO newsAuthPageReqDTO) {
+        return wmNewsService.authFail(newsAuthPageReqDTO);
+    }
+
+    @PostMapping("/auth_pass")
+    public ResponseResult authPass(@RequestBody NewsAuthPageReqDTO newsAuthPageReqDTO) {
+        return wmNewsService.authPass(newsAuthPageReqDTO);
     }
 
 
