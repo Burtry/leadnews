@@ -8,13 +8,17 @@ import com.heima.model.common.dtos.AdminChannelPageRequestDTO;
 import com.heima.model.common.dtos.AdminLoginDTO;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.dto.wemedia.AdChannelDTO;
 import com.heima.model.pojo.wemedia.WmChannel;
 import com.heima.wemedia.mapper.WmChannelMapper;
 import com.heima.wemedia.service.WmChannelService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 @Service
 @Transactional
@@ -54,5 +58,14 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
         responseResult.setData(page.getRecords());
         return responseResult;
 
+    }
+
+    @Override
+    public ResponseResult saveChannel(AdChannelDTO adChannelDTO) {
+        WmChannel wmChannel = new WmChannel();
+        BeanUtils.copyProperties(adChannelDTO,wmChannel);
+        wmChannel.setCreatedTime(new Date());
+        save(wmChannel);
+        return ResponseResult.okResult(200,"添加成功");
     }
 }
