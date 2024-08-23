@@ -10,6 +10,7 @@
         <module name="freemarker-demo" />
         <module name="heima-file-starter" />
         <module name="heima-leadnews-wemedia-gateway" />
+        <module name="xxl-job-demo" />
         <module name="leadnews-admin-web" />
         <module name="heima-leadnews-wemedia" />
         <module name="heima-leadnews-feign-api" />
@@ -63,6 +64,7 @@
       <module name="leadnews-user" options="-parameters" />
       <module name="mongo-demo" options="-parameters" />
       <module name="tess4j" options="-parameters" />
+      <module name="xxl-job-demo" options="-parameters" />
     </option>
   </component>
 </project>
