@@ -20,8 +20,10 @@ public class ArticleHomeController {
     @PostMapping("/load")
     public ResponseResult load(@RequestBody ArticleHomeDto dto) {
 
-        return articleService.load(ArticleConstants.LOADTYPE_LOAD_MORE,dto);
+        //return articleService.load(ArticleConstants.LOADTYPE_LOAD_MORE,dto);
+        return articleService.load2(dto,ArticleConstants.LOADTYPE_LOAD_MORE,true);
     }
+
 
     @PostMapping("/loadmore")
     public ResponseResult loadMore(@RequestBody ArticleHomeDto dto) {

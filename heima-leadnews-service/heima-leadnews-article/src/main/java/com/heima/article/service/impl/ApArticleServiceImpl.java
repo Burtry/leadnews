@@ -1,5 +1,6 @@
 package com.heima.article.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.article.mapper.ApArticleConfigMapper;
@@ -8,6 +9,7 @@ import com.heima.article.mapper.ApArticleMapper;
 import com.heima.article.service.ApArticleService;
 import com.heima.article.service.ArticleFreemarkerService;
 import com.heima.common.constants.ArticleConstants;
+import com.heima.common.redis.CacheService;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.dto.article.ArticleDto;
@@ -15,6 +17,7 @@ import com.heima.model.dto.article.ArticleHomeDto;
 import com.heima.model.pojo.article.ApArticle;
 import com.heima.model.pojo.article.ApArticleConfig;
 import com.heima.model.pojo.article.ApArticleContent;
+import com.heima.model.vo.article.HotArticleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +47,9 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
     @Autowired
     private ArticleFreemarkerService articleFreemarkerService;
 
+    @Autowired
+    private CacheService cacheService;
+
     @Override
     public ResponseResult load(Short loadType, ArticleHomeDto dto) {
         //参数校验
@@ -71,6 +77,20 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
         List<ApArticle> articleList = articleMapper.loadArticleList(dto, loadType);
         return ResponseResult.okResult(articleList);
 
+    }
+
+    @Override
+    public ResponseResult load2(ArticleHomeDto dto, Short type, boolean firstPage) {
+        if (firstPage) {
+            String jsonStr = cacheService.get(ArticleConstants.HOT_ARTICLE_FIRST_PAGE + dto.getTag());
+            if(StringUtils.isNotBlank(jsonStr)){
+                List<HotArticleVO> hotArticleVoList = JSON.parseArray(jsonStr, HotArticleVO.class);
+                ResponseResult responseResult = ResponseResult.okResult(hotArticleVoList);
+                return responseResult;
+            }
+        }
+
+        return load(type,dto);
     }
 
     @Override

@@ -10,3 +10,7 @@ spring:
       config:
         server-addr: 192.168.50.128:8848
         file-extension: yml
+  redis:
+    host: 192.168.50.128
+    port: 6379
+    password: leadnews
