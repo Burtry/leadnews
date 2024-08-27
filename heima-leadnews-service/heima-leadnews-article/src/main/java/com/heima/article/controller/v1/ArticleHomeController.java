@@ -35,6 +35,5 @@ public class ArticleHomeController {
     @PostMapping("/loadnew")
     public ResponseResult loadNew(@RequestBody ArticleHomeDto dto) {
         return articleService.load(ArticleConstants.LOADTYPE_LOAD_NEW,dto);
-
     }
 }
