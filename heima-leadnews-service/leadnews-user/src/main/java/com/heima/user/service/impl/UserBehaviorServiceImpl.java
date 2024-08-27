@@ -3,6 +3,7 @@ package com.heima.user.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.heima.common.constants.BehaviorConstants;
 import com.heima.common.redis.CacheService;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
@@ -35,37 +36,34 @@ public class UserBehaviorServiceImpl extends ServiceImpl<UserBehaviorMapper, ApU
 
     @Override
     public ResponseResult userFollow(UserRelationDto userRelationDto) {
-        if (userRelationDto == null) {
+        if (userRelationDto == null || userRelationDto.getOperation() == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
         //获取用户信息
         ApUser user = AppThreadLocalUtil.getUser();
+        if (user == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+        }
 
-        user = apUserService.getById(4);
+        Integer apUserId = user.getId();
 
-
-        //查询作者信息
-        ApUser author = apUserService.getById(userRelationDto.getAuthorId());
+        Integer followUserId = userRelationDto.getAuthorId();
 
         if (userRelationDto.getOperation() == 0) {
-            //关注，新增
-            ApUserFollow apUserFollow = new ApUserFollow();
-            apUserFollow.setUserId(user.getId());
-            apUserFollow.setFollowId(author.getId());
-            apUserFollow.setFollowName(author.getName());
-            apUserFollow.setCreatedTime(new Date());
+            //将对方写入我的关注中
+            cacheService.zAdd(BehaviorConstants.APUSER_FOLLOW_RELATION + apUserId,followUserId.toString(),System.currentTimeMillis());
 
-            //存储到redis中 key: fallow_userId_id_authorId_id
-            cacheService.set("fallow_userId_" + user.getId() + "authorId_" + author.getId(),JSON.toJSONString(apUserFollow));
-
-            return ResponseResult.okResult(200, "关注成功");
+            //将我写入对方粉丝
+            cacheService.zAdd(BehaviorConstants.APUSER_FANS_RELATION + followUserId,apUserId.toString(),System.currentTimeMillis());
 
         } else {
-            cacheService.delete("fallow_userId_" + user.getId() + "authorId_" + author.getId());
-            return ResponseResult.okResult(200,"取消关注成功");
+            //取消关注
+            cacheService.zRemove(BehaviorConstants.APUSER_FOLLOW_RELATION + apUserId,followUserId.toString());
+            cacheService.zRemove(BehaviorConstants.APUSER_FANS_RELATION + followUserId,apUserId.toString());
 
         }
 
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
 
     }
 }
