@@ -1044,8 +1044,8 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="303" parent="1" name="leadnews_user">
-      <IntrospectionTimestamp>2024-08-16.21:45:04</IntrospectionTimestamp>
-      <LocalIntrospectionTimestamp>2024-08-16.05:45:04</LocalIntrospectionTimestamp>
+      <IntrospectionTimestamp>2024-08-28.00:10:35</IntrospectionTimestamp>
+      <LocalIntrospectionTimestamp>2024-08-27.08:10:35</LocalIntrospectionTimestamp>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </schema>
     <schema id="304" parent="1" name="leadnews_article">
@@ -1443,7 +1443,7 @@ execute_time</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="370" parent="315" name="id">
-      <AutoIncrement>6</AutoIncrement>
+      <AutoIncrement>7</AutoIncrement>
       <Comment>主键</Comment>
       <DasType>int unsigned|0s</DasType>
       <NotNull>1</NotNull>
@@ -1583,9 +1583,9 @@ execute_time</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="395" parent="317" name="id">
-      <AutoIncrement>1</AutoIncrement>
+      <AutoIncrement>2</AutoIncrement>
       <Comment>主键</Comment>
-      <DasType>int unsigned|0s</DasType>
+      <DasType>bigint|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
