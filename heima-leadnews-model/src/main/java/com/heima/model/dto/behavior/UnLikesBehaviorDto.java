@@ -4,15 +4,15 @@ import com.heima.model.common.annotation.IdEncrypt;
 import lombok.Data;
 
 @Data
-public class LikesBehaviorDto {
+public class UnLikesBehaviorDto {
 
     @IdEncrypt
     private Long articleId;
 
-    private Short type;
     /**
-     * 0点赞
-     * 1取消点赞
+     * 0 不喜欢
+     * 1取消不喜欢
      */
-    private Short operation;
+    private Short type;
+
 }
