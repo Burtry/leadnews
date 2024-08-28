@@ -1,5 +1,6 @@
 package com.heima.model.dto.article;
 
+import com.heima.model.common.annotation.IdEncrypt;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ public class CollectionBehaviorDTO {
     /**
      * 文章id
      */
+    @IdEncrypt
     private Long entryId;
 
     /**
