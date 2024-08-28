@@ -32,10 +32,6 @@ public class ApCollectionServiceImpl extends ServiceImpl<ApCollectionMapper, APC
     private CacheService cacheService;
 
 
-    @Autowired
-    private ApArticleService articleService;
-
-
     @Override
     public ResponseResult collcetion(CollectionBehaviorDTO collectionBehaviorDTO) {
         if (collectionBehaviorDTO == null || collectionBehaviorDTO.getOperation() == null) {

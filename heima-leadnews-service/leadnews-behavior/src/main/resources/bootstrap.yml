@@ -1,0 +1,16 @@
+server:
+  port: 51805
+spring:
+  application:
+    name: leadnews-behavior
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.50.128:8848
+      config:
+        server-addr: 192.168.50.128:8848
+        file-extension: yml
+  redis:
+    host: 192.168.50.128
+    port: 6379
+    password: leadnews
