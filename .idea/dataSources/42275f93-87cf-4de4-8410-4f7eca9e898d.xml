@@ -1044,8 +1044,8 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="303" parent="1" name="leadnews_user">
-      <IntrospectionTimestamp>2024-08-28.00:10:35</IntrospectionTimestamp>
-      <LocalIntrospectionTimestamp>2024-08-27.08:10:35</LocalIntrospectionTimestamp>
+      <IntrospectionTimestamp>2024-08-28.23:02:41</IntrospectionTimestamp>
+      <LocalIntrospectionTimestamp>2024-08-28.07:02:41</LocalIntrospectionTimestamp>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </schema>
     <schema id="304" parent="1" name="leadnews_article">

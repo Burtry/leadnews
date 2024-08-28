@@ -10,7 +10,7 @@ public class UserRelationDto {
      * 文章id
      */
     @IdEncrypt
-    private Integer articleId;
+    private Long articleId;
 
     /**
      * 作者id
