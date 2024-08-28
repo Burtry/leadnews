@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.dto.article.ArticleDto;
 import com.heima.model.dto.article.ArticleHomeDto;
+import com.heima.model.dto.article.ArticleInfoDto;
 import com.heima.model.pojo.article.ApArticle;
 
 
@@ -33,4 +34,11 @@ public interface ApArticleService extends IService<ApArticle> {
      * @param articleDto
      */
     ResponseResult saveArticle(ArticleDto articleDto);
+
+    /**
+     * 加载文章行为-数据回显
+     * @param articleInfoDto
+     * @return
+     */
+    ResponseResult loadArticleBehavior(ArticleInfoDto articleInfoDto);
 }
