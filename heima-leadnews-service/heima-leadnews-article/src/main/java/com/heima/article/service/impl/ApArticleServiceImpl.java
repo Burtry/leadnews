@@ -186,7 +186,6 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
 
         // 3.4 是否关注
         Double score = cacheService.zScore(BehaviorConstants.APUSER_FOLLOW_RELATION + user.getId(), dto.getAuthorId().toString());
-        log.info("" + score);
         if(score != null){
             isFollow = true;
         }

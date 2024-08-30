@@ -51,11 +51,11 @@ public class ApLikesBehaviorServiceImpl implements ApLikesBehaviorService {
             }
             //向redis保存当前key
             cacheService.hPut(BehaviorConstants.LIKE_BEHAVIOR + dto.getArticleId(),user.getId().toString(), JSON.toJSONString(dto));
-            //updateArticleMess.setAdd(1);
+            updateArticleMess.setAdd(1);
         } else {
             //取消点赞
             cacheService.hDelete(BehaviorConstants.LIKE_BEHAVIOR + dto.getArticleId(),user.getId().toString());
-            //updateArticleMess.setAdd(-1);
+            updateArticleMess.setAdd(-1);
         }
 
         //数据聚合
