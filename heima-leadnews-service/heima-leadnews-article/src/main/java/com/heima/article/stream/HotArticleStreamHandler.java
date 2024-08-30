@@ -2,6 +2,7 @@ package com.heima.article.stream;
 
 import com.alibaba.fastjson.JSON;
 import com.heima.common.constants.HotArticleConstants;
+import com.heima.model.mess.ArticleVisitStreamMess;
 import com.heima.model.mess.UpdateArticleMess;
 import com.sun.xml.internal.rngom.digested.DValuePattern;
 import lombok.extern.slf4j.Slf4j;
@@ -102,9 +103,50 @@ public class HotArticleStreamHandler {
                     }
                 }, Materialized.as("hot-article-stream-count-001"))
                 .toStream()
+                .map((key,value) -> {
+                    //处理key和value
+                    return new KeyValue<>(key.key().toString(),formatObj(key.key().toString(),value));
+                })
                 //发送消息
                 .to(HotArticleConstants.HOT_ARTICLE_INCR_HANDLE_TOPIC);
 
         return stream;
+    }
+
+    /**
+     * 格式化消息value数据
+     * @param articleId
+     * @param value
+     * @return
+     */
+    private String formatObj(String articleId, String value) {
+
+        ArticleVisitStreamMess mess = new ArticleVisitStreamMess();
+        mess.setArticleId(Long.valueOf(articleId));
+
+        //"COLLECTION:0,COMMENT:0,LIKES:0,VIEWS:0"
+        String[] valArr = value.split(",");
+
+        for (String val : valArr) {
+
+            String[] split = val.split(":");
+            switch (UpdateArticleMess.UpdateArticleType.valueOf(split[0])) {
+                case LIKES:
+                    mess.setLike(Integer.parseInt(split[1]));
+                    break;
+                case COMMENT:
+                    mess.setComment(Integer.parseInt(split[1]));
+                    break;
+                case COLLECTION:
+                    mess.setCollect(Integer.parseInt(split[1]));
+                    break;
+                case VIEWS:
+                    mess.setView(Integer.parseInt(split[1]));
+                    break;
+            }
+
+        }
+        log.info("聚合操作处理后结果为:" + JSON.toJSONString(mess));
+        return JSON.toJSONString(mess);
     }
 }
