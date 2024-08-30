@@ -13,7 +13,7 @@ public class HelloController {
 
     @GetMapping("/hello")
     public String hello(){
-        kafkaTemplate.send("itcast-topic","黑马程序员");
+        kafkaTemplate.send("topic-input","黑马程序员");
         return "ok";
     }
 }

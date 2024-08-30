@@ -61,6 +61,12 @@
             <version>2.3.0</version>
         </dependency>
 
+<!--        kafka streams-->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+        </dependency>
+
 
     </dependencies>
 

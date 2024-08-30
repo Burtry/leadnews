@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class HelloListener {
 
-    @KafkaListener(topics = "itcast-topic")
+    @KafkaListener(topics = "topic-out")
     public void onMessage(String message){
         if(!StringUtils.isEmpty(message)){
             System.out.println(message);

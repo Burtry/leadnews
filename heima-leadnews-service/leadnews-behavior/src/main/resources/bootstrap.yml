@@ -14,3 +14,6 @@ spring:
     host: 192.168.50.128
     port: 6379
     password: leadnews
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
