@@ -6,6 +6,7 @@ import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.dto.article.ArticleDto;
 import com.heima.model.dto.article.ArticleHomeDto;
 import com.heima.model.dto.article.ArticleInfoDto;
+import com.heima.model.mess.ArticleVisitStreamMess;
 import com.heima.model.pojo.article.ApArticle;
 
 
@@ -41,4 +42,11 @@ public interface ApArticleService extends IService<ApArticle> {
      * @return
      */
     ResponseResult loadArticleBehavior(ArticleInfoDto articleInfoDto);
+
+
+    /**
+     * 更新文章分数
+     * @param mess
+     */
+    void updateScore(ArticleVisitStreamMess mess);
 }

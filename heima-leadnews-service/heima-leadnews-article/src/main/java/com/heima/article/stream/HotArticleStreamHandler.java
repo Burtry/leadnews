@@ -26,7 +26,7 @@ public class HotArticleStreamHandler {
         //聚合处理
         stream.map((key, value) -> {
             UpdateArticleMess updateArticleMess = JSON.parseObject(value, UpdateArticleMess.class);
-            return new KeyValue<>(updateArticleMess.getArticleId().toString(),updateArticleMess.getType().name() + ":" + updateArticleMess.getAdd());
+            return new KeyValue<>(updateArticleMess.getArticleId().toString(),updateArticleMess.getType().name() + ":" + updateArticleMess.getAdd()); //value的值格式为 type:add (例如: LIKES:1)
         })
                 //按照文章id进行聚合
                 .groupBy((key,value) -> key)
