@@ -2,10 +2,12 @@ package com.heima.article.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.dto.article.ArticleDto;
 import com.heima.model.dto.article.ArticleHomeDto;
 import com.heima.model.dto.article.ArticleInfoDto;
+import com.heima.model.dto.comment.ArticleCommentDto;
 import com.heima.model.mess.ArticleVisitStreamMess;
 import com.heima.model.pojo.article.ApArticle;
 
@@ -49,4 +51,11 @@ public interface ApArticleService extends IService<ApArticle> {
      * @param mess
      */
     void updateScore(ArticleVisitStreamMess mess);
+
+    /**
+     * 查询文章的评论列表
+     * @param dto
+     * @return
+     */
+    PageResponseResult findNewsComments(ArticleCommentDto dto);
 }

@@ -3,7 +3,9 @@ package com.heima.article.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import com.heima.model.dto.article.ArticleHomeDto;
+import com.heima.model.dto.comment.ArticleCommentDto;
 import com.heima.model.pojo.article.ApArticle;
+import com.heima.model.vo.comment.ArticleCommentVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,4 +19,8 @@ public interface ApArticleMapper extends BaseMapper<ApArticle> {
 
     List<ApArticle> findArticleListByLast5Days(Date date);
 
+
+    List<ArticleCommentVo> findNewsComments(ArticleCommentDto dto);
+
+    int findNewsCommentsCount(ArticleCommentDto dto);
 }

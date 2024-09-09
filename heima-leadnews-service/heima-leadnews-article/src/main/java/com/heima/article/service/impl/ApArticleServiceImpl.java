@@ -11,17 +11,20 @@ import com.heima.article.service.ArticleFreemarkerService;
 import com.heima.common.constants.ArticleConstants;
 import com.heima.common.constants.BehaviorConstants;
 import com.heima.common.redis.CacheService;
+import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.dto.article.ArticleDto;
 import com.heima.model.dto.article.ArticleHomeDto;
 import com.heima.model.dto.article.ArticleInfoDto;
+import com.heima.model.dto.comment.ArticleCommentDto;
 import com.heima.model.mess.ArticleVisitStreamMess;
 import com.heima.model.pojo.article.ApArticle;
 import com.heima.model.pojo.article.ApArticleConfig;
 import com.heima.model.pojo.article.ApArticleContent;
 import com.heima.model.pojo.user.ApUser;
 import com.heima.model.vo.article.HotArticleVO;
+import com.heima.model.vo.comment.ArticleCommentVo;
 import com.heima.utils.thread.AppThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -346,5 +349,25 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle
             scere += apArticle.getCollection() * ArticleConstants.HOT_ARTICLE_COLLECTION_WEIGHT;
         }
         return scere;
+    }
+
+
+    /**
+     * 查询文章的评论统计
+     * @param dto
+     * @return
+     */
+    @Override
+    public PageResponseResult findNewsComments(ArticleCommentDto dto) {
+        // 1. 统计文章评论信息
+        Integer currentPage = dto.getPage();
+        dto.setPage((dto.getPage() - 1) * dto.getSize());
+        List<ArticleCommentVo> list = articleMapper.findNewsComments(dto);
+        int count = articleMapper.findNewsCommentsCount(dto);
+
+        // 2. 构造结果返回
+        PageResponseResult responseResult = new PageResponseResult(currentPage, dto.getSize(), count);
+        responseResult.setData(list);
+        return responseResult;
     }
 }
