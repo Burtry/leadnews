@@ -10,13 +10,18 @@ import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.pojo.wemedia.WmSensitive;
+import com.heima.utils.common.SensitiveWordUtil;
 import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.service.WmSensitiveService;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -77,5 +82,27 @@ public class WmSensitiveServiceImpl extends ServiceImpl<WmSensitiveMapper, WmSen
         update(wmSensitive, Wrappers.<WmSensitive>lambdaUpdate().eq(WmSensitive::getId,wmSensitive.getId()));
 
         return ResponseResult.okResult(200,"更新成功");
+    }
+
+    @Autowired
+    private WmSensitiveMapper wmSensitiveMapper;
+
+    @Override
+    public ResponseResult checkSensitive(String content) {
+        // 获取所有的敏感词
+        List<WmSensitive> wmSensitives = wmSensitiveMapper.selectList(Wrappers.<WmSensitive>lambdaQuery().select(WmSensitive::getSensitives));
+        List<String> sensitiveList = wmSensitives.stream().map(WmSensitive::getSensitives).collect(Collectors.toList());
+
+        // 初始化敏感词库
+        SensitiveWordUtil.initMap(sensitiveList);
+
+        // 查看评论中是否包含敏感词
+        Map<String, Integer> map = SensitiveWordUtil.matchWords(content);
+        if(!map.isEmpty()) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "当前评论中包含敏感词: " + map);
+        }
+
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+
     }
 }

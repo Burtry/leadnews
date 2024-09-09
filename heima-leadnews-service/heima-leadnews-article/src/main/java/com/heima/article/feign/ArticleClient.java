@@ -1,13 +1,14 @@
 package com.heima.article.feign;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.heima.apis.article.IArticleClient;
+import com.heima.article.service.ApArticleConfigService;
 import com.heima.article.service.ApArticleService;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.dto.article.ArticleDto;
+import com.heima.model.pojo.article.ApArticleConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ArticleClient implements IArticleClient {
@@ -15,9 +16,21 @@ public class ArticleClient implements IArticleClient {
     @Autowired
     private ApArticleService articleService;
 
+    @Autowired
+    private ApArticleConfigService apArticleConfigService;
+
     @PostMapping("/api/v1/article/save")
     @Override
     public ResponseResult saveArticle(@RequestBody ArticleDto articleDto) {
         return articleService.saveArticle(articleDto);
     }
+
+    @GetMapping("/api/v1/article/findArticleConfigByArticleId/{articleId}")
+    @Override
+    public ResponseResult findArticleConfigByArticleId(@PathVariable("articleId") Long articleId) {
+        ApArticleConfig apArticleConfig = apArticleConfigService.getOne(Wrappers.<ApArticleConfig>lambdaQuery().eq(ApArticleConfig::getArticleId, articleId));
+        return ResponseResult.okResult(apArticleConfig);
+    }
+
+
 }

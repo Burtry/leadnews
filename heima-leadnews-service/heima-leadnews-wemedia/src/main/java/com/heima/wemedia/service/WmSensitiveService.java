@@ -35,4 +35,11 @@ public interface WmSensitiveService extends IService<WmSensitive> {
      * @return
      */
     ResponseResult updateSensiticve(WmSensitive wmSensitive);
+
+    /**
+     * 评论检查敏感词
+     * @param content
+     * @return
+     */
+    ResponseResult checkSensitive(String content);
 }
